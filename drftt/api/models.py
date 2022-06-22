@@ -31,6 +31,7 @@ class GameLevel(models.Model):
     number = models.IntegerField(
         primary_key=True,
     )
+
     geo_lat = models.FloatField(max_length=16, verbose_name='широта')
     geo_lng = models.FloatField(max_length=16, verbose_name='долгота')
     name = models.CharField(max_length=64, unique=True, verbose_name='название уровня')
@@ -39,6 +40,10 @@ class GameLevel(models.Model):
         upload_to='level_img',
         blank=True,
     )
+    promt1 = models.CharField(max_length=300, blank=True, verbose_name='подсказка1')
+    promt2 = models.CharField(max_length=300, blank=True, verbose_name='подсказка2')
+    promt3 = models.CharField(max_length=300, blank=True, verbose_name='подсказка3')
+    got_promt_counter = models.IntegerField(default=0)
     level_started = models.BooleanField(default=False)
     level_active = models.BooleanField(default=True)
     level_done = models.BooleanField(default=False)
@@ -76,15 +81,4 @@ class WrongAnswers(models.Model):
         return self.answer
 
 
-class Promt(models.Model):
-    level = models.ForeignKey(
-        GameLevel,
-        on_delete=models.CASCADE,
-        verbose_name='уровень',
-    )
-    promt = models.CharField(max_length=300, blank=True, verbose_name='подсказка')
-    counter = models.IntegerField(
-    )
 
-    def __str__(self):
-        return f'(Уровень {self.level} подсказка {self.counter})'

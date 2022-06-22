@@ -17,15 +17,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 
-app_name = 'drftt'
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('level/<int:pk>/', gameapp.game_level, name='level'),
-    path('api/', include('api.urls', namespace='api')),
+    path('', include('api.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
-
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 
