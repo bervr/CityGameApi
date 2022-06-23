@@ -21,6 +21,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'level', views.GameLevelViewSet)
 
+app_name = 'api'
 
 urlpatterns = [
     path('', include(router.urls)),
