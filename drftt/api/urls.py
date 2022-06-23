@@ -20,10 +20,11 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'level', views.GameLevelViewSet)
+router.register(r'play', views.GamePlayViewSet)
 
 app_name = 'api'
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
