@@ -37,7 +37,7 @@ class GameLevel(models.Model):
     level_of_game = models.ForeignKey(
         Game,
         on_delete=models.CASCADE,
-        verbose_name='уровень',
+        verbose_name='игра',
     )
     number = models.IntegerField(primary_key=True,)
     geo_lat = models.FloatField(max_length=16, verbose_name='широта')
@@ -72,13 +72,6 @@ class GamePlay(models.Model):
         on_delete=models.CASCADE,
         verbose_name='команда',)
 
-    def get_tip(self, number):
-        self.level.select
-        self.is_active = False
-        self.save()
-
-    def answer(self, answer):
-        pass
 
 
 
@@ -106,6 +99,12 @@ class Promt(models.Model):
         verbose_name='уровень',
     )
     promt = models.CharField(max_length=256, blank=True, verbose_name='подсказка')
+
+    # def get_promt(self, number):
+    #     promt = self.level.objects.get(number)
+    #     self
+    #     self.is_active = False
+    #     self.save()
 
     def __str__(self):
         return f'(Уровень {self.level} подсказка {self.counter})'

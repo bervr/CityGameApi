@@ -19,8 +19,10 @@ from django.urls import path, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
+router.register(r'game', views.GameViewSet)
 router.register(r'level', views.GameLevelViewSet)
-router.register(r'play', views.GamePlayViewSet)
+router.register(r'team', views.TeamViewSet)
+router.register(r'gameplay', views.GamePlayViewSet)
 
 app_name = 'api'
 
