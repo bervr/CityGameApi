@@ -21,7 +21,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'level', views.GameLevelViewSet)
 # router.register(r'team', views.TeamViewSet)
-router.register(r'gameplay', views.GamePlayViewSet)
+# router.register(r'gameplay', views.GamePlayViewSet)
 # router.register(r'game', views.GameViewSet)
 
 app_name = 'api'
@@ -35,6 +35,8 @@ urlpatterns = [
     path('answer/<int:pk>', views.AnswerDetail.as_view()),
     path('promt/', views.PromtList.as_view()),
     path('promt/<int:pk>', views.PromtDetail.as_view()),
+    path('gameplay/', views.GamePlayList.as_view()),
+    path('gameplay/<int:pk>', views.GamePlayDetail.as_view()),
     path('', include(router.urls)),
 
     ]

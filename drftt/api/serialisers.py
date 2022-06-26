@@ -3,7 +3,6 @@ from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt
 from django.contrib.auth.models import User
 
 
-
 class GameSerialiser(serializers.ModelSerializer):
     class Meta:
         model = Game
@@ -17,19 +16,20 @@ class GameLevelSerialiser(serializers.HyperlinkedModelSerializer):
 
 
 class TeamSerialiser(serializers.ModelSerializer):
-    answers = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source="answers_team",)
+    answers = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source="answers_team", )
 
     class Meta:
         model = User
         fields = ('id', 'username', 'answers')
 
 
-
 class AnswerSerialiser(serializers.ModelSerializer):
     team = serializers.ReadOnlyField(source='team.username')
+
     class Meta:
         model = TeamAnswers
         fields = ('level', 'team', 'answer', 'created')
+
 
 class PromtSerialiser(serializers.ModelSerializer):
     # team = serializers.ReadOnlyField(source='team.username')
@@ -38,8 +38,7 @@ class PromtSerialiser(serializers.ModelSerializer):
         fields = ('level', 'promt', 'counter')
 
 
-
-class GamePlaySerialiser(serializers.HyperlinkedModelSerializer):
+class GamePlaySerialiser(serializers.ModelSerializer):
     class Meta:
         model = GamePlay
-        fields = ('level', 'team',)
+        fields = ('game', 'level', 'team', 'level_started', 'level_finished', 'getted_promt_counter')

@@ -49,7 +49,13 @@ class PromtDetail(generics.RetrieveAPIView):
     queryset = Promt.objects.all()
     serializer_class = PromtSerialiser
 
-class GamePlayViewSet(viewsets.ModelViewSet):
+class GamePlayList(generics.ListAPIView):
     queryset = GamePlay.objects.all()
     serializer_class = GamePlaySerialiser
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+class GamePlayDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = GamePlay.objects.all()
+    serializer_class = GamePlaySerialiser
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
