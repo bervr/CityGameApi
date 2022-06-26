@@ -19,14 +19,22 @@ from django.urls import path, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'game', views.GameViewSet)
 router.register(r'level', views.GameLevelViewSet)
-router.register(r'team', views.TeamViewSet)
+# router.register(r'team', views.TeamViewSet)
 router.register(r'gameplay', views.GamePlayViewSet)
+# router.register(r'game', views.GameViewSet)
 
 app_name = 'api'
 
 urlpatterns = [
-    path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('game/', views.GameList.as_view()),
+    path('game/<int:pk>', views.GameDetail.as_view()),
+    path('team/', views.TeamList.as_view()),
+    path('team/<int:pk>', views.TeamDetail.as_view()),
+    path('answer/', views.AnswersList.as_view()),
+    path('answer/<int:pk>', views.AnswerDetail.as_view()),
+    path('promt/', views.PromtList.as_view()),
+    path('promt/<int:pk>', views.PromtDetail.as_view()),
+    path('', include(router.urls)),
+
     ]

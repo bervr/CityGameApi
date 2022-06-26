@@ -1,23 +1,53 @@
 
-from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser, TeamSerialiser
-from .models import Game, GameLevel,  WrongAnswers, Team, GamePlay, Promt
-from rest_framework import viewsets
+from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser,\
+    TeamSerialiser, AnswerSerialiser, PromtSerialiser
+from .models import Game, GameLevel,  TeamAnswers,  GamePlay, Promt
+from rest_framework import viewsets, generics, permissions
+from django.contrib.auth.models import User
+from .permissions import IsOwnerOrReadOnly
 
 
 
-class GameViewSet(viewsets.ModelViewSet):
-    queryset = Game.objects.all().order_by('game_number')
+class GameList(generics.ListAPIView):
+    queryset = Game.objects.all()
     serializer_class = GameSerialiser
 
+class GameDetail(generics.RetrieveAPIView):
+    queryset = Game.objects.all()
+    serializer_class = GameSerialiser
 
 class GameLevelViewSet(viewsets.ModelViewSet):
     queryset = GameLevel.objects.all().order_by('name')
     serializer_class = GameLevelSerialiser
 
-class TeamViewSet(viewsets.ModelViewSet):
-    queryset = Team.objects.all().order_by('team_number')
+class TeamList(generics.ListAPIView):
+    queryset = User.objects.all()
     serializer_class = TeamSerialiser
 
+class TeamDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = TeamSerialiser
+
+class AnswersList(generics.ListAPIView):
+    queryset = TeamAnswers.objects.all()
+    serializer_class = AnswerSerialiser
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self,serialiser):
+        serialiser.save(team=self.request.user)
+
+class AnswerDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = TeamAnswers.objects.all()
+    serializer_class = AnswerSerialiser
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+
+class PromtList(generics.ListAPIView):
+    queryset = Promt.objects.all()
+    serializer_class = PromtSerialiser
+
+class PromtDetail(generics.RetrieveAPIView):
+    queryset = Promt.objects.all()
+    serializer_class = PromtSerialiser
 
 class GamePlayViewSet(viewsets.ModelViewSet):
     queryset = GamePlay.objects.all()
