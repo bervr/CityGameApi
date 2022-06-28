@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt
+from .models import Game, GameLevel, TeamAnswers, GamePlay
 from django.contrib.auth.models import User
 
 
@@ -9,10 +9,10 @@ class GameSerialiser(serializers.ModelSerializer):
         fields = ['game_number', 'game_name', 'game_go', 'game_start', 'game_finish']
 
 
-class GameLevelSerialiser(serializers.HyperlinkedModelSerializer):
+class GameLevelSerialiser(serializers.ModelSerializer):
     class Meta:
         model = GameLevel
-        fields = ('number', 'name', 'task', 'geo_lat', 'geo_lng')
+        fields = ('number', 'name', 'task', 'geo_lat', 'geo_lng', 'promt=None')
 
 
 class TeamSerialiser(serializers.ModelSerializer):
@@ -34,11 +34,11 @@ class AnswerSerialiser(serializers.ModelSerializer):
 class PromtSerialiser(serializers.ModelSerializer):
     # team = serializers.ReadOnlyField(source='team.username')
     class Meta:
-        model = Promt
-        fields = ('level', 'promt', 'counter')
+        model = GameLevel
+        fields = ('promt1',)
 
 
 class GamePlaySerialiser(serializers.ModelSerializer):
     class Meta:
         model = GamePlay
-        fields = ('game', 'level', 'team', 'level_started', 'level_finished', 'getted_promt_counter')
+        fields = ('game', 'level', 'team', 'level_status', 'level_started', 'level_finished', 'getted_promt_counter')
