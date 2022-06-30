@@ -12,7 +12,7 @@ class GameSerialiser(serializers.ModelSerializer):
 class GameLevelSerialiser(serializers.ModelSerializer):
     class Meta:
         model = GameLevel
-        fields = ('number', 'name', 'task', 'geo_lat', 'geo_lng', 'promt=None')
+        fields = ['number', 'name', 'task', 'geo_lat', 'geo_lng',]
 
 
 class TeamSerialiser(serializers.ModelSerializer):
@@ -35,7 +35,10 @@ class PromtSerialiser(serializers.ModelSerializer):
     # team = serializers.ReadOnlyField(source='team.username')
     class Meta:
         model = GameLevel
-        fields = ('promt1',)
+        promts = []
+        for item in GamePlay.promt_unlocked:
+            promts.append(GamePlay.objects.get(f'promt{item}'))
+        fields = promts
 
 
 class GamePlaySerialiser(serializers.ModelSerializer):

@@ -40,7 +40,7 @@ class GetPromt(generics.RetrieveAPIView):
     def get_queryset(self):
         data = super().get_queryset()
 
-        self.queryset = GameLevel.objects.filter(level_of_game =self.kwargs['pk']) #.promt_dict[f'promt{self.kwargs["num"]}']
+        self.queryset = GameLevel.objects.filter(level_of_game=self.kwargs['pk']) #.promt_dict[f'promt{self.kwargs["num"]}']
         return self.queryset
 
 

@@ -40,6 +40,7 @@ urlpatterns = [
     path('level/', views.GameLevelList.as_view()),
     path('level/<int:pk>/', views.GameLevelDetail.as_view()),
     path('level/<int:pk>/promt<int:num>', views.GetPromt.as_view()),
+    path('level/<int:pk>/answer?<str:answer>', views.AnswerDetail.as_view()),
     # path('', include(router.urls)),
 
     ]
