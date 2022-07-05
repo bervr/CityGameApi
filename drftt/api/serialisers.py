@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Game, GameLevel, TeamAnswers, GamePlay
+from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt
 from django.contrib.auth.models import User
+
 
 
 class GameSerialiser(serializers.ModelSerializer):
@@ -16,11 +17,12 @@ class GameLevelSerialiser(serializers.ModelSerializer):
 
 
 class TeamSerialiser(serializers.ModelSerializer):
-    answers = serializers.PrimaryKeyRelatedField(many=True, read_only=True, source="answers_team", )
+    answers_team = serializers.PrimaryKeyRelatedField(many=True, read_only=True, )
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'answers')
+        fields = ('id', 'username', 'answers_team')
+        #todo починить вывод ответов или убить это сериалайзер
 
 
 class AnswerSerialiser(serializers.ModelSerializer):
@@ -28,17 +30,16 @@ class AnswerSerialiser(serializers.ModelSerializer):
 
     class Meta:
         model = TeamAnswers
-        fields = ('level', 'team', 'answer', 'created')
+        fields = ('game', 'level', 'team', 'answer', 'created')
 
 
 class PromtSerialiser(serializers.ModelSerializer):
-    # team = serializers.ReadOnlyField(source='team.username')
     class Meta:
-        model = GameLevel
-        promts = []
-        for item in GamePlay.promt_unlocked:
-            promts.append(GamePlay.objects.get(f'promt{item}'))
-        fields = promts
+        model = Promt
+        fields = []
+
+
+
 
 
 class GamePlaySerialiser(serializers.ModelSerializer):
