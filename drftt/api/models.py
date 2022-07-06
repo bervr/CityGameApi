@@ -13,6 +13,8 @@ class Game(models.Model):
     game_start = models.DateTimeField(blank=True, null=True)
     game_finish = models.DateTimeField(blank=True, null=True)
 
+
+
     def __str__(self):
         return self.game_name
 
@@ -110,7 +112,11 @@ class GamePlay(models.Model):
                                     default=NOT_STARTED)
     getted_promt_counter = models.PositiveIntegerField(default=0)
 
-    data = models.JSONField(null=True)
+    data = models.JSONField(default={  # тут будет хранить сведенья о выданных подскзках
+                1: False,
+                2: False,
+                3: False,
+            })
 
     team = models.ForeignKey(
         'auth.User',
@@ -118,17 +124,14 @@ class GamePlay(models.Model):
         on_delete=models.CASCADE,
         verbose_name='команда',
     )
+    def start_game_level(instance, team):
+        level = GamePlay.objects.create(level=instance, game=instance.level_of_game, team=team)
+        level.save()
 
     def registry_promt(instance, team, promt_number):
-        level, __ = GamePlay.objects.get_or_create(level=instance, game=instance.level_of_game, team=team)
-        if not level.data:
-            level.data = {  # тут будет хранить сведенья о выданных подскзках
-                1: False,
-                2: False,
-                3: False,
-            }
-            level.save()
+        level = GamePlay.objects.filter(team=team).filter(level=instance).get()
         if level.level_status != 'DN':
+            # if not  level.data[promt_number]:
             if not level.data[f'{promt_number}']:
                 level.data[promt_number] = True
                 level.getted_promt_counter += 1
@@ -136,7 +139,12 @@ class GamePlay(models.Model):
 
     @receiver(pre_save, sender=TeamAnswers)
     def write_user_answer(sender, instance, **kwargs):
-        level, __ = GamePlay.objects.get_or_create(level=instance.level, game=instance.game, team=instance.team)
+        try:
+            level = GamePlay.objects.filter(team=instance.team).filter(level=instance.level).get()
+        except:
+            GamePlay.start_game_level(instance.level, instance.team)
+            level = GamePlay.objects.filter(team=instance.team).filter(level=instance.level).get()
+            # level, __ = GamePlay.objects.get_or_create(level=instance.level, game=instance.game, team=instance.team)
         if level.level_status != 'DN':
             if TeamAnswers.check_answer(instance):
                 level.level_status = 'DN'
@@ -148,3 +156,25 @@ class GamePlay(models.Model):
     def __str__(self):
         return f'команда {self.team}/ уровень-{self.level}' \
                f'/ статус - {self.level_status} /использовано подсказок {self.getted_promt_counter}'
+
+# class GameSummary(models.Model):
+#     team_place = models.PositiveIntegerField()
+#     team = models.ForeignKey(
+#         'auth.User',
+#         related_name='playing_team',
+#         on_delete=models.CASCADE,
+#         verbose_name='команда',
+#     )
+#     for level in GameLevel.objects.all():
+#         level_score = models.TimeField(blank=True, null=True)
+#
+#     tasks_done = models.PositiveIntegerField(default=0)
+#     total_penalty = models.TimeField(blank=True, null=True)
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'app_gamesummary'
+
+
+
+

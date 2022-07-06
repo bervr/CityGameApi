@@ -1,5 +1,3 @@
-from rest_framework.response import Response
-
 from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser,\
     TeamSerialiser, AnswerSerialiser, PromtSerialiser
 from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt
@@ -7,7 +5,7 @@ from rest_framework import viewsets, generics, permissions
 from django.contrib.auth.models import User
 from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
-from django.db.models import Q, QuerySet
+
 
 
 class GameList(generics.ListAPIView):
@@ -35,14 +33,15 @@ class GetPromt(generics.RetrieveAPIView):
     def get_serializer(self, *args, **kwargs):
         team = self.request.user
         level_number = self.kwargs['pk']
-        try:
-            requested_level = GamePlay.objects.filter(level=level_number).get()
-        except:
-            requested_level = None
+        promt_number = self.kwargs['num']
         game_level = get_object_or_404(GameLevel, number=level_number)
-        if game_level and game_level.level_active and not requested_level \
-                or requested_level.level_status != 'DN':  # проверяем что уровень открыт команде
-            promt_number = self.kwargs['num']
+        try:
+            requested_level = GamePlay.objects.filter(team=team).filter(level=level_number).get()
+        except:
+            GamePlay.start_game_level(game_level, team)
+            requested_level = GamePlay.objects.filter(team=team).filter(level=level_number).get()
+
+        if game_level and game_level.level_active or requested_level.level_status != 'DN':  # проверяем что уровень открыт команде или не закончен
             promt_list = [f'promt{promt_number}',]
             GamePlay.registry_promt(game_level, team, promt_number)  # регистрируем выдачу подсказки
         else:
