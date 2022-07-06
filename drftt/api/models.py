@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 class Game(models.Model):
@@ -12,8 +13,16 @@ class Game(models.Model):
     game_go = models.BooleanField(default=False)
     game_start = models.DateTimeField(blank=True, null=True)
     game_finish = models.DateTimeField(blank=True, null=True)
+    now = timezone.now()
 
-
+    def check_game_time(self):  #допустим что город один и сервер в его часовом поясе
+        if self.game_finish >= timezone.now() >= self.game_start and not self.game_go:
+            self.game_go = True
+            self.save()
+        if self.game_finish <= timezone.now() and self.game_go:
+            self.game_go = False
+            self.save()
+        return self.game_go
 
     def __str__(self):
         return self.game_name
@@ -124,14 +133,16 @@ class GamePlay(models.Model):
         on_delete=models.CASCADE,
         verbose_name='команда',
     )
+    wrong_answer_counter = models.PositiveIntegerField(default=0)
+
     def start_game_level(instance, team):
         level = GamePlay.objects.create(level=instance, game=instance.level_of_game, team=team)
+        level.level_started = instance.level_of_game.game_start
         level.save()
 
     def registry_promt(instance, team, promt_number):
         level = GamePlay.objects.filter(team=team).filter(level=instance).get()
         if level.level_status != 'DN':
-            # if not  level.data[promt_number]:
             if not level.data[f'{promt_number}']:
                 level.data[promt_number] = True
                 level.getted_promt_counter += 1
@@ -144,13 +155,13 @@ class GamePlay(models.Model):
         except:
             GamePlay.start_game_level(instance.level, instance.team)
             level = GamePlay.objects.filter(team=instance.team).filter(level=instance.level).get()
-            # level, __ = GamePlay.objects.get_or_create(level=instance.level, game=instance.game, team=instance.team)
         if level.level_status != 'DN':
             if TeamAnswers.check_answer(instance):
                 level.level_status = 'DN'
-                level.level_finished = datetime.now()
+                level.level_finished = timezone.now()
             else:
                 level.level_status = 'TTA'
+                level.wrong_answer_counter +=1
             level.save()
 
     def __str__(self):
@@ -169,11 +180,9 @@ class GamePlay(models.Model):
 #         level_score = models.TimeField(blank=True, null=True)
 #
 #     tasks_done = models.PositiveIntegerField(default=0)
+#     total_promts_used = sum(GamePlay.objects.filter(team=team).set_getted_promt_counter)
 #     total_penalty = models.TimeField(blank=True, null=True)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'app_gamesummary'
+
 
 
 

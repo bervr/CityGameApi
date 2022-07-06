@@ -82,21 +82,6 @@ class AnswerDetail(generics.CreateAPIView):
         serialiser.save(team=self.request.user)
 
 
-
-    # def perform_create(self, serialiser):
-    #     serialiser.save(team=self.request.user)
-#
-# class PromtList(generics.ListAPIView):
-#     queryset = Promt.objects.all()
-#     serializer_class = PromtSerialiser
-#
-# class PromtDetail(generics.RetrieveAPIView):
-#     queryset = Promt.objects.all()
-#     serializer_class = PromtSerialiser
-
-
-
-
 class GamePlayList(generics.ListAPIView):
     queryset = GamePlay.objects.all()
     serializer_class = GamePlaySerialiser
