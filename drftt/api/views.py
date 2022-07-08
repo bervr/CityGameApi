@@ -1,3 +1,5 @@
+from django.db.models import Count
+
 from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser,\
     TeamSerialiser, AnswerSerialiser, PromtSerialiser, GameSummarySerialiser
 from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt, TeamPlace
@@ -5,16 +7,6 @@ from rest_framework import viewsets, generics, permissions
 from django.contrib.auth.models import User
 from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
-
-
-class GameList(generics.ListAPIView):
-    queryset = Game.objects.all()
-    serializer_class = GameSerialiser
-
-
-class GameDetail(generics.RetrieveAPIView):
-    queryset = Game.objects.all()
-    serializer_class = GameSerialiser
 
 
 class GameLevelList(generics.ListAPIView):
@@ -69,15 +61,6 @@ class TeamDetail(generics.RetrieveAPIView):
     serializer_class = TeamSerialiser
 
 
-class AnswersList(generics.ListAPIView):
-    queryset = TeamAnswers.objects.all()
-    serializer_class = AnswerSerialiser
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serialiser):
-        serialiser.save(team=self.request.user)
-
-
 class AnswerDetail(generics.CreateAPIView):
     queryset = TeamAnswers.objects.all()
     serializer_class = AnswerSerialiser
@@ -87,17 +70,47 @@ class AnswerDetail(generics.CreateAPIView):
         serialiser.save(team=self.request.user)
 
 
-class GamePlayList(generics.ListAPIView):
-    queryset = GamePlay.objects.all()
-    serializer_class = GamePlaySerialiser
-
-
-class GamePlayDetail(generics.RetrieveAPIView):
-    queryset = GamePlay.objects.all()
-    serializer_class = GamePlaySerialiser
-
-
 class GameSummary(generics.ListAPIView):
     queryset = TeamPlace.objects.all()
     serializer_class = GameSummarySerialiser
 
+    # def get_queryset(self):
+    #
+    #     q = TeamPlace.objects.all()
+    #     new_q = []
+    #
+    #     for item  in q:
+    #         string = {}
+    #         place =item.place
+    #         a = item
+    #         print(a)
+    #
+    #     return q
+
+# class GameList(generics.ListAPIView):
+#     queryset = Game.objects.all()
+#     serializer_class = GameSerialiser
+#
+#
+# class GameDetail(generics.RetrieveAPIView):
+#     queryset = Game.objects.all()
+#     serializer_class = GameSerialiser
+
+
+# class GamePlayList(generics.ListAPIView):
+#     queryset = GamePlay.objects.all()
+#     serializer_class = GamePlaySerialiser
+#
+#
+# class GamePlayDetail(generics.RetrieveAPIView):
+#     queryset = GamePlay.objects.all()
+#     serializer_class = GamePlaySerialiser
+
+#
+# class AnswersList(generics.ListAPIView):
+#     queryset = TeamAnswers.objects.all()
+#     serializer_class = AnswerSerialiser
+#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+#
+#     def perform_create(self, serialiser):
+#         serialiser.save(team=self.request.user)

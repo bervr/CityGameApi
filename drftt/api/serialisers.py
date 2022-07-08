@@ -19,8 +19,8 @@ class GameLevelSerialiser(serializers.ModelSerializer):
 
 
 class TeamSerialiser(serializers.ModelSerializer):
-    answers_team = serializers.PrimaryKeyRelatedField(many=True, read_only=True, )
 
+    answers_team = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         model = User
         fields = ('id', 'username', 'answers_team')
@@ -52,7 +52,7 @@ class GameSummarySerialiser(serializers.ModelSerializer):
     level_penalty = serializers.ReadOnlyField(source='level_penalty ')
     class Meta:
         model = TeamPlace
-        fields = ('summ_penalty', 'user', 'level', 'levelname', 'level_status', 'level_penalty', 'total_finished')
+        fields = ( 'place', 'user', 'level', 'levelname', 'level_status', 'level_penalty', 'total_finished', 'summ_penalty')
 
 
 

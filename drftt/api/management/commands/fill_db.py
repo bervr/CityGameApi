@@ -7,10 +7,12 @@ from django.contrib.auth.models import User
 
 JSON_PATH = 'json'
 
+
 def load_from_json(file_name):
     with open(os.path.join(JSON_PATH, file_name + '.json'), encoding='utf-8') as f:
         return json.load(f)
-#
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         games =  load_from_json('game')
