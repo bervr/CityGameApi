@@ -1,6 +1,8 @@
+import datetime
+
 from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser,\
-    TeamSerialiser, AnswerSerialiser, PromtSerialiser
-from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt
+    TeamSerialiser, AnswerSerialiser, PromtSerialiser, GameSummarySerialiser
+from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt, TeamPlace
 from rest_framework import viewsets, generics, permissions
 from django.contrib.auth.models import User
 from .permissions import IsOwnerOrReadOnly
@@ -92,3 +94,44 @@ class GamePlayDetail(generics.RetrieveAPIView):
     serializer_class = GamePlaySerialiser
     # permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
+class GameSummary(generics.ListAPIView):
+    queryset = TeamPlace.objects.all()
+    serializer_class = GameSummarySerialiser
+
+
+# class GameSummary(generics.ListAPIView):
+#     Model = GamePlay.objects.all()
+#     def get_queryset(self):
+#         queryset = self.queryset
+#         promt_penalty = 900  # время в секундах
+#         answer_penalty = 1800 # время в секундах
+#         fields = []
+#         for team in User:
+#             total_penalty = 0
+#             team_stat ={}
+#             team_stat['team'] = team
+#             levels = {}
+#             for level in GameLevel:
+#                 level_score = {}
+#                 lvl = GamePlay.objects.filter(team=team).filter(level=level).get()
+#                 level_status = lvl.level_status
+#                 level_wrongs = lvl.wrong_answer_counter
+#                 level_promts = lvl.getted_promt_counter
+#                 level_score['number'] = level.level
+#                 level_score['name'] = level.name
+#                 level_score['status'] =level_status
+#                 level_score['wrongs'] =level_wrongs
+#                 level_score['promts'] =datetime.timedelta(seconds=level_promts)
+#                 if level_status == 'DN':
+#                     level_time = lvl.level.level_penalty
+#                     level_penalty = level_time + level_wrongs*answer_penalty + level_promts*promt_penalty
+#                     total_penalty += level_penalty
+#                     level_score['penalty'] = datetime.timedelta(seconds=level_penalty)
+#                 levels[level.level] = level_score
+#                 team_stat['levels'] = levels
+#                 team_stat['total_penalty'] = datetime.timedelta(seconds=total_penalty)
+#             fields.append(team_stat)
+#
+#         if isinstance(queryset, QuerySet):
+#             queryset = queryset.all()
+#         return queryset

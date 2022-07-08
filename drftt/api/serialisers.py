@@ -1,5 +1,7 @@
+import datetime
+
 from rest_framework import serializers
-from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt
+from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt, TeamPlace
 from django.contrib.auth.models import User
 
 
@@ -39,10 +41,18 @@ class PromtSerialiser(serializers.ModelSerializer):
         fields = []
 
 
-
-
-
 class GamePlaySerialiser(serializers.ModelSerializer):
     class Meta:
         model = GamePlay
         fields = ('game', 'level', 'team', 'level_status', 'level_started', 'level_finished', 'getted_promt_counter')
+
+class GameSummarySerialiser(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.username')
+    levelname = serializers.ReadOnlyField(source='level.name')
+    level_penalty = serializers.ReadOnlyField(source='level_penalty ')
+    class Meta:
+        model = TeamPlace
+        fields = ('summ_penalty', 'user', 'level', 'levelname', 'level_status', 'level_penalty', 'total_finished')
+
+
+

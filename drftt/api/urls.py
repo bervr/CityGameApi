@@ -31,5 +31,6 @@ urlpatterns = [
     path('level/<int:pk>/', views.GameLevelDetail.as_view()),
     path('level/<int:pk>/promt/<int:num>', views.GetPromt.as_view()),
     path('answer/', views.AnswerDetail.as_view()),
+    path('stat/', views.GameSummary.as_view()),
 
     ]

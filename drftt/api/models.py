@@ -119,13 +119,14 @@ class GamePlay(models.Model):
                                     max_length=3,
                                     choices=LEVEL_STATUS_CHOICES,
                                     default=NOT_STARTED)
-    getted_promt_counter = models.PositiveIntegerField(default=0)
-
-    data = models.JSONField(default={  # тут будет хранить сведенья о выданных подскзках
+    getted_promt_counter = models.PositiveIntegerField(null=True, default=0)
+    data_dict = {  # тут будет хранить сведенья о выданных подскзках
                 1: False,
                 2: False,
                 3: False,
-            })
+            }
+    data = models.JSONField(default=dict)
+    data = data_dict
 
     team = models.ForeignKey(
         'auth.User',
@@ -133,7 +134,8 @@ class GamePlay(models.Model):
         on_delete=models.CASCADE,
         verbose_name='команда',
     )
-    wrong_answer_counter = models.PositiveIntegerField(default=0)
+    wrong_counter_answer = models.PositiveIntegerField(null=True, default=0)
+    level_penalty = models.DecimalField(null=True, max_digits=17, decimal_places=11)
 
     def start_game_level(instance, team):
         level = GamePlay.objects.create(level=instance, game=instance.level_of_game, team=team)
@@ -159,29 +161,43 @@ class GamePlay(models.Model):
             if TeamAnswers.check_answer(instance):
                 level.level_status = 'DN'
                 level.level_finished = timezone.now()
+                level.level_penalty = (level.level_finished - level.level_started).total_seconds()
             else:
                 level.level_status = 'TTA'
-                level.wrong_answer_counter +=1
+                level.wrong_counter_answer +=1
             level.save()
 
     def __str__(self):
         return f'команда {self.team}/ уровень-{self.level}' \
                f'/ статус - {self.level_status} /использовано подсказок {self.getted_promt_counter}'
 
+
 # class GameSummary(models.Model):
-#     team_place = models.PositiveIntegerField()
-#     team = models.ForeignKey(
-#         'auth.User',
-#         related_name='playing_team',
-#         on_delete=models.CASCADE,
-#         verbose_name='команда',
-#     )
-#     for level in GameLevel.objects.all():
-#         level_score = models.TimeField(blank=True, null=True)
-#
-#     tasks_done = models.PositiveIntegerField(default=0)
-#     total_promts_used = sum(GamePlay.objects.filter(team=team).set_getted_promt_counter)
-#     total_penalty = models.TimeField(blank=True, null=True)
+#     # id = models.BigIntegerField(primary_key=True)
+#     summ_penalty = models.DecimalField(null=True, max_digits=17, decimal_places=11)
+#     user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)
+#     level = models.ForeignKey(GameLevel, on_delete=models.DO_NOTHING)
+#     level_status = models.CharField(max_length=15)
+#     level_finished = models.DateTimeField(blank=True, null=True)
+#     level_penalty = models.DecimalField(max_digits=17, decimal_places=11)
+#     total_finished = models.PositiveIntegerField(null=True, blank=True)
+#     class Meta:
+#         managed = False
+#         db_table = 'base_stat'
+
+class TeamPlace(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    place = models.BigIntegerField(null=True)
+    user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)
+    level = models.ForeignKey(GameLevel, on_delete=models.DO_NOTHING)
+    level_status = models.CharField(max_length=15)
+    level_penalty = models.DecimalField(max_digits=17, decimal_places=11)
+    total_finished = models.PositiveIntegerField(null=True, blank=True)
+    summ_penalty = models.DecimalField(null=True, max_digits=17, decimal_places=11)
+    class Meta:
+        managed = False
+        db_table = 'team_place'
+
 
 
 
