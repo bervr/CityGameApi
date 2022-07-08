@@ -17,17 +17,17 @@ https://your_url_here/api-auth/login/
 
 Ссылка  в API  https://your_url_here/api
 
-GET /level/ - все уровни игры
-GET /level/{int:id} - уровень игры с заданым номером
-GET /level/{int:id}/promt/{int:num}  - подсказка num для уровня id
-POST /answer/ - отправить ответ 
-content : {
+<p>GET /level/ - все уровни игры</p>
+<p>GET /level/{int:id} - уровень игры с заданым номером</p>
+<p>GET /level/{int:id}/promt/{int:num}  - подсказка num для уровня id</p>
+<p>POST /answer/ - отправить ответ </p>
+```content : {
     "game": id,     - id игры
     "level": id,    - id уровня   
     "answer": ""    - ответ
-}
+}```
 
-GET /stat/ - статистика уровней
+<p>GET /stat/ - статистика уровней</p>
 
 
 
