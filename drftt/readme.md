@@ -21,11 +21,14 @@ https://your_url_here/api-auth/login/
 <p>GET /level/{int:id} - уровень игры с заданым номером</p>
 <p>GET /level/{int:id}/promt/{int:num}  - подсказка num для уровня id</p>
 <p>POST /answer/ - отправить ответ </p>
-```content : {
+
+```
+content : {
     "game": id,     - id игры
     "level": id,    - id уровня   
     "answer": ""    - ответ
-}```
+}
+   ```
 
 <p>GET /stat/ - статистика уровней</p>
 
