@@ -73,9 +73,6 @@ class AnswerDetail(generics.CreateAPIView):
         serialiser.save(team=self.request.user)
 
 
-# class GameSummary(generics.ListAPIView):
-#     queryset = TeamPlace.objects.all()
-#     serializer_class = GameSummarySerialiser()
 
 @api_view(['GET'])
 def game_summary(request):

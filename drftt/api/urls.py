@@ -13,25 +13,16 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
 from . import views
-from django.urls import path, include
-from rest_framework import routers
+from django.urls import path
 
 app_name = 'api'
 
 urlpatterns = [
-    # path('game/', views.GameList.as_view()),
-    # path('game/<int:pk>', views.GameDetail.as_view()),
-    # path('team/', views.TeamList.as_view()),
-    # path('team/<int:pk>', views.TeamDetail.as_view()),
-    # path('gameplay/', views.GamePlayList.as_view()),
-    # path('gameplay/<int:pk>/', views.GamePlayDetail.as_view()),
     path('level/', views.GameLevelList.as_view()),
     path('level/<int:pk>/', views.GameLevelDetail.as_view()),
     path('level/<int:pk>/promt/<int:num>', views.GetPromt.as_view()),
     path('answer/', views.AnswerDetail.as_view()),
-    # path('stat/', views.GameSummary.as_view()),
     path('stat/', views.game_summary),
 
     ]
