@@ -1,4 +1,7 @@
-from django.db.models import Count
+import datetime
+from django.db.models import Count, Max
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser,\
     TeamSerialiser, AnswerSerialiser, PromtSerialiser, GameSummarySerialiser
@@ -70,47 +73,15 @@ class AnswerDetail(generics.CreateAPIView):
         serialiser.save(team=self.request.user)
 
 
-class GameSummary(generics.ListAPIView):
-    queryset = TeamPlace.objects.all()
-    serializer_class = GameSummarySerialiser
+# class GameSummary(generics.ListAPIView):
+#     queryset = TeamPlace.objects.all()
+#     serializer_class = GameSummarySerialiser()
 
-    # def get_queryset(self):
-    #
-    #     q = TeamPlace.objects.all()
-    #     new_q = []
-    #
-    #     for item  in q:
-    #         string = {}
-    #         place =item.place
-    #         a = item
-    #         print(a)
-    #
-    #     return q
+@api_view(['GET'])
+def game_summary(request):
+    instance = TeamPlace.objects.all()
+    serialiser = GameSummarySerialiser(instance)
+    return Response(serialiser.data)
 
-# class GameList(generics.ListAPIView):
-#     queryset = Game.objects.all()
-#     serializer_class = GameSerialiser
-#
-#
-# class GameDetail(generics.RetrieveAPIView):
-#     queryset = Game.objects.all()
-#     serializer_class = GameSerialiser
-
-
-# class GamePlayList(generics.ListAPIView):
-#     queryset = GamePlay.objects.all()
-#     serializer_class = GamePlaySerialiser
-#
-#
-# class GamePlayDetail(generics.RetrieveAPIView):
-#     queryset = GamePlay.objects.all()
-#     serializer_class = GamePlaySerialiser
-
-#
-# class AnswersList(generics.ListAPIView):
-#     queryset = TeamAnswers.objects.all()
-#     serializer_class = AnswerSerialiser
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-#
-#     def perform_create(self, serialiser):
-#         serialiser.save(team=self.request.user)
+    def get_human_time(sec):
+        return datetime.timedelta(seconds=sec)
