@@ -80,5 +80,4 @@ def game_summary(request):
     serialiser = GameSummarySerialiser(instance)
     return Response(serialiser.data)
 
-    def get_human_time(sec):
-        return datetime.timedelta(seconds=sec)
+
