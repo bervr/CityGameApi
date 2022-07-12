@@ -9,6 +9,7 @@ class Command(BaseCommand):
         create_base= '''
             create view base_stat as select 
             ROW_NUMBER() over() as id,
+            gp.game_id,
             pn.summ_penalty,
             au.id as user_id,
             gp.level_id, 
@@ -27,7 +28,7 @@ class Command(BaseCommand):
             order by total_finished desc, pn.summ_penalty; '''
         create_place = '''
             create view team_place as
-            select ROW_NUMBER() over() id, tw.place, tw.username, level_id, level_status ,level_penalty, tw.total_finished, tw.summ_penalty, user_id, level_id  
+            select ROW_NUMBER() over() id, game_id, tw.place, tw.username, level_id, level_status ,level_penalty, tw.total_finished, tw.summ_penalty, user_id, level_id  
             FROM base_stat bs join  
             (select ROW_NUMBER() over (order by total_finished desc, summ_penalty) as place, username, total_finished, summ_penalty
             from (select 

@@ -17,9 +17,9 @@ https://your_url_here/api-auth/login/
 
 Ссылка  в API  https://your_url_here/api
 
-<p>GET /level/ - все уровни игры</p>
-<p>GET /level/{int:id} - уровень игры с заданым номером</p>
-<p>GET /level/{int:id}/promt/{int:num}  - подсказка num для уровня id</p>
+<p>GET game/{int:game}/level/ - все уровни игры game</p>
+<p>GET game/{int:game}/level/{int:id} - уровень игры с заданым номером</p>
+<p>GET /level/{int:game}/{int:id}/promt/{int:num}  - подсказка num, для уровня id, игры game</p>
 <p>POST /answer/ - отправить ответ </p>
 
 ```

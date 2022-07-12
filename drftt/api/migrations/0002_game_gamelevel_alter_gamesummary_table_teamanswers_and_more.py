@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Game',
             fields=[
-                ('game_number', models.IntegerField(primary_key=True, serialize=False)),
+                ('game_number', models.AutoField(primary_key=True, serialize=False)),
                 ('game_name', models.CharField(max_length=64, verbose_name='название игры')),
                 ('game_go', models.BooleanField(default=False)),
                 ('game_start', models.DateTimeField(blank=True, null=True)),
@@ -26,7 +26,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GameLevel',
             fields=[
-                ('number', models.IntegerField(primary_key=True, serialize=False)),
+                ('id', models.AutoField(primary_key=True, serialize=False)),
+                ('number', models.PositiveIntegerField(auto_created=True)),
                 ('geo_lat', models.FloatField(max_length=16, verbose_name='широта')),
                 ('geo_lng', models.FloatField(max_length=16, verbose_name='долгота')),
                 ('name', models.CharField(max_length=64, unique=True, verbose_name='название уровня')),
@@ -43,7 +44,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TeamAnswers',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigIntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('answer', models.CharField(max_length=256)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('game', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answ_for_game', to='api.game', verbose_name='игра')),
@@ -54,7 +55,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Promt',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('promt1', models.CharField(db_index=True, max_length=300)),
                 ('promt2', models.CharField(db_index=True, max_length=300)),
                 ('promt3', models.CharField(db_index=True, max_length=300)),
@@ -64,7 +65,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GamePlay',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('level_started', models.DateTimeField(blank=True, null=True)),
                 ('level_finished', models.DateTimeField(blank=True, null=True)),
                 ('level_status', models.CharField(choices=[('DN', 'сдано'), ('TTA', 'неверный ответ'), ('NSD', 'не начато')], default='NSD', max_length=3, verbose_name='статус')),

@@ -1,7 +1,7 @@
 import datetime
 
 from rest_framework import serializers
-from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt, TeamPlace
+from .models import Game, GameLevel, TeamAnswers, GamePlay
 from django.contrib.auth.models import User
 
 
@@ -36,7 +36,7 @@ class AnswerSerialiser(serializers.ModelSerializer):
 
 class PromtSerialiser(serializers.ModelSerializer):
     class Meta:
-        model = Promt
+        model = GameLevel
         fields = []
 
 
@@ -65,8 +65,8 @@ class GameSummarySerialiser(serializers.BaseSerializer):
                 place['team'] = item.user.username
                 place['levels'] = levels
                 place['total_finished'] = item.total_finished
-                place['summ_penalty'] = self.get_human_time(item.summ_penalty)
-                # place['summ_penalty'] = item.summ_penalty
+                if item.summ_penalty:
+                    place['summ_penalty'] = self.get_human_time(item.summ_penalty)
                 result[f'{item.place}'] = place
             else:
                 levels = result.get(str(item.place)).get('levels')
