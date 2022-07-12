@@ -179,6 +179,7 @@ class TeamPlace(models.Model):
     id = models.BigIntegerField(primary_key=True)
     place = models.BigIntegerField(null=True)
     user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)
+    # levels = models.JSONField(default=dict)
     level = models.ForeignKey(GameLevel, on_delete=models.DO_NOTHING)
     level_status = models.CharField(max_length=15)
     level_penalty = models.DecimalField(max_digits=17, decimal_places=11)
