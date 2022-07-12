@@ -5,7 +5,7 @@ from django.utils import timezone
 
 
 class Game(models.Model):
-    game_number = models.IntegerField(
+    game_number = models.AutoField(
         primary_key=True,
     )
     game_name = models.CharField(max_length=64, verbose_name='название игры')
@@ -34,31 +34,20 @@ class GameLevel(models.Model):
         on_delete=models.CASCADE,
         verbose_name='игра',
     )
-    number = models.IntegerField(primary_key=True, )
+    id = models.AutoField(primary_key=True)
+    number = models.PositiveIntegerField(auto_created=True)
     geo_lat = models.FloatField(max_length=16, verbose_name='широта')
     geo_lng = models.FloatField(max_length=16, verbose_name='долгота')
     name = models.CharField(max_length=64, unique=True, verbose_name='название уровня')
     task = models.TextField(verbose_name='текст задания', )
     answer = models.CharField(max_length=256)
     level_active = models.BooleanField(default=True)
+    promt1 = models.CharField(max_length=300, null=True, db_index=True)
+    promt2 = models.CharField(max_length=300, null=True, db_index=True)
+    promt3 = models.CharField(max_length=300, null=True, db_index=True)
 
     def __str__(self):
-        return f'{self.number}/{self.name}'
-
-
-class Promt(models.Model):
-    level = models.ForeignKey(
-        GameLevel,
-        related_name='promts',
-        on_delete=models.CASCADE,
-        verbose_name='уровень',
-    )
-    promt1 = models.CharField(max_length=300, db_index=True)
-    promt2 = models.CharField(max_length=300, db_index=True)
-    promt3 = models.CharField(max_length=300, db_index=True)
-
-    def __str__(self):
-        return f'Promts {self.level} level'
+        return f'{self.level_of_game}/{self.number} level/{self.name}'
 
 
 class TeamAnswers(models.Model):
@@ -144,7 +133,6 @@ class GamePlay(models.Model):
     def registry_promt(instance, team, promt_number):
         level = GamePlay.objects.filter(team=team).filter(level=instance).get()
         if level.level_status != 'DN':
-            # if not level.data[f'{promt_number}']:
             if not level.data[promt_number]:
                 level.data[promt_number] = True
                 level.getted_promt_counter += 1
@@ -176,10 +164,10 @@ class GamePlay(models.Model):
 
 
 class TeamPlace(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
+    game_id = models.PositiveIntegerField()
     place = models.BigIntegerField(null=True)
     user = models.ForeignKey('auth.User', on_delete=models.DO_NOTHING)
-    # levels = models.JSONField(default=dict)
     level = models.ForeignKey(GameLevel, on_delete=models.DO_NOTHING)
     level_status = models.CharField(max_length=15)
     level_penalty = models.DecimalField(max_digits=17, decimal_places=11)

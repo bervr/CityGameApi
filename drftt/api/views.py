@@ -1,12 +1,10 @@
-import datetime
-from django.db.models import Count, Max
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .serialisers import GameLevelSerialiser, GamePlaySerialiser, GameSerialiser,\
-    TeamSerialiser, AnswerSerialiser, PromtSerialiser, GameSummarySerialiser
-from .models import Game, GameLevel, TeamAnswers, GamePlay, Promt, TeamPlace
-from rest_framework import viewsets, generics, permissions
+from .serialisers import GameLevelSerialiser,\
+    TeamSerialiser, AnswerSerialiser, GameSummarySerialiser, PromtSerialiser
+from .models import GameLevel, TeamAnswers, GamePlay, TeamPlace, Game
+from rest_framework import generics, permissions
 from django.contrib.auth.models import User
 from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
@@ -16,9 +14,17 @@ class GameLevelList(generics.ListAPIView):
     queryset = GameLevel.objects.all()
     serializer_class = GameLevelSerialiser
 
+    def get_queryset(self):
+        data = super().get_queryset()
+        game_num = self.kwargs['game']
+        game = get_object_or_404(Game, game_number=game_num)
+        data = data.filter(level_of_game=game)
+        game.check_game_time()
+        return data
+
 
 class GetPromt(generics.RetrieveAPIView):
-    queryset = Promt.objects.all()
+    queryset = GameLevel.objects.all()
     serializer_class = PromtSerialiser
     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
@@ -31,7 +37,8 @@ class GetPromt(generics.RetrieveAPIView):
         team = self.request.user
         level_number = self.kwargs['pk']
         promt_number = self.kwargs['num']
-        game_level = get_object_or_404(GameLevel, number=level_number)
+        game_number = self.kwargs['game']
+        game_level = get_object_or_404(GameLevel, number=level_number, level_of_game=game_number )
         game = game_level.level_of_game
         try:
             requested_level = GamePlay.objects.filter(team=team).filter(level=level_number).get()
@@ -53,6 +60,14 @@ class GameLevelDetail(generics.RetrieveAPIView):
     queryset = GameLevel.objects.all()
     serializer_class = GameLevelSerialiser
 
+    def get_queryset(self):
+        data = super().get_queryset()
+        game_num = self.kwargs['game']
+        level_num = self.kwargs['pk']
+        game = get_object_or_404(Game, game_number=game_num)
+        game.check_game_time()
+        data = data.filter(level_of_game=game).filter(number=level_num)
+        return data
 
 class TeamList(generics.ListAPIView):
     queryset = User.objects.all()
@@ -75,8 +90,8 @@ class AnswerDetail(generics.CreateAPIView):
 
 
 @api_view(['GET'])
-def game_summary(request):
-    instance = TeamPlace.objects.all()
+def game_summary(request, game):
+    instance = TeamPlace.objects.filter(game_id=game)
     serialiser = GameSummarySerialiser(instance)
     return Response(serialiser.data)
 
