@@ -7,7 +7,6 @@ services:
       - ./drftt/.env
     volumes:
       - ./drftt
-
     ports:
       - 8000:8000
 
