@@ -1,25 +1,21 @@
 version: '3.8'
 services:
-  sqlite3:
-    image: nouchka/sqlite3:latest
-    container_name: sqlite3
-    stdin_open: true
-    tty: true
+  db:
+    image: postgres
     volumes:
-      - ./sqlite:/root/db
-    environment:
-      - SQLITE_DB=db.sqlite3
+      - ./data/db:/var/lib/postgresql/data
+    env_file:
+      - ./drftt/.env
   web:
     build: .
-    container_name: drf_app
     env_file:
       - ./drftt/.env
     volumes:
-      - ./drftt
+      - ./code
     ports:
       - 8000:8000
     depends_on:
-      - sqlite3
+      - db
 
 
 
