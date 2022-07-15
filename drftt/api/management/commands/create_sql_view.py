@@ -40,8 +40,8 @@ class Command(BaseCommand):
             summ_penalty 
             from base_stat
             group by level_id, username
-            order by total_finished desc, summ_penalty)
-            GROUp by username) as tw
+            order by total_finished desc, summ_penalty) as tw
+            GROUp by username) 
             on tw.username = bs.username
             GROUP by place, level_id; '''
         cursor = connection.cursor()

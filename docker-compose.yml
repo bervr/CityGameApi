@@ -1,19 +1,19 @@
 version: '3.8'
 volumes:
-  data: {}
+  data: {drftt_vol}
 services:
   db:
     container_name: postgres
     image: postgres
     volumes:
-      - data:/var/lib/postgresql/data
+      - ./data/db:/var/lib/postgresql/data
     env_file:
-      - ./drftt/.env
+      - .env
   web:
     build: .
-    container_name: drf
+    container_name: drf-app
     env_file:
-      - ./drftt/.env
+      - .env
     volumes:
       - data
     ports:
