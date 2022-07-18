@@ -1,6 +1,6 @@
 version: '3.8'
 volumes:
-  data: {drftt_vol}
+  data:
 services:
   db:
     container_name: postgres

@@ -78,22 +78,4 @@ class Migration(migrations.Migration):
                                            to=settings.AUTH_USER_MODEL, verbose_name='команда')),
             ],
         ),
-        migrations.CreateModel(
-            name='TeamPlace',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('game_id', models.PositiveIntegerField()),
-                ('place', models.BigIntegerField(null=True)),
-                ('user', models.ForeignKey('auth.User', on_delete=django.db.models.deletion.DO_NOTHING)),
-                ('level', models.ForeignKey(to='api.gamelevel', on_delete=django.db.models.deletion.DO_NOTHING)),
-                ('level_status', models.CharField(max_length=15)),
-                ('level_penalty', models.DecimalField(max_digits=17, decimal_places=11)),
-                ('total_finished', models.PositiveIntegerField(blank=True, null=True)),
-                ('summ_penalty', models.DecimalField(decimal_places=11, max_digits=17, null=True)),
-                ],
-                options={
-                'db_table': 'team_place',
-                'managed': False,
-                },
-                ),
     ]

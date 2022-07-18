@@ -1,7 +1,12 @@
+import datetime
+
+from django.contrib import auth
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
+from collections import OrderedDict
 import zoneinfo
 
 
@@ -23,6 +28,44 @@ class Game(models.Model):
             instance.game_go = False
             instance.save()
         return instance.game_go
+
+    def get_places(self):
+        places = {}
+        raw_places =[]
+        teams = User.objects.all()
+        for team in teams:
+            team_set = {}
+            team_total_penalty = 0
+            level_finished = 0
+            levels = {}
+            for level in GamePlay.objects.filter(game=self).filter(team=team):
+                lvl = {}
+                lvl['level_name'] = level.level.name
+                lvl['level_status'] = level.level_status
+                if level.level_status == 'DN':
+                    level_finished += 1
+                    team_total_penalty += level.level_penalty + level.getted_promt_counter*900 + \
+                                          level.wrong_counter_answer*1800
+                if level.level_penalty:
+                    lvl['level_penalty'] = self.get_human_time(level.level_penalty)
+                levels[f'{level.level_id}'] = lvl
+
+            team_set['team'] = team.username
+            team_set['levels'] = levels
+            team_set['summ_penalty'] = self.get_human_time(team_total_penalty)
+            team_set['total_finished'] = level_finished
+            raw_places.append(team_set)
+        sorted_places = sorted(sorted(raw_places, key=lambda x: x['summ_penalty']), key=lambda x: x['total_finished'], reverse=True)
+        for i, item in enumerate(sorted_places):
+            sorted_places[i]['place'] = i+1
+            places[i+1] = sorted_places[i]
+        return places
+
+    def get_human_time(self, time):
+        seconds = int(time)
+        millis = str(time-seconds).strip('0')
+        human_time = str(datetime.timedelta(seconds=seconds))
+        return human_time+millis
 
     def __str__(self):
         return self.game_name
@@ -109,13 +152,14 @@ class GamePlay(models.Model):
                                     choices=LEVEL_STATUS_CHOICES,
                                     default=NOT_STARTED)
     getted_promt_counter = models.PositiveIntegerField(null=True, default=0)
-    data_dict = {  # тут будет хранить сведенья о выданных подскзках
+    # data_dict = dict()
+    # data_dict =
+    data = models.JSONField(default={  # тут будет хранить сведенья о выданных подсказках
                 1: False,
                 2: False,
                 3: False,
-            }
-    data = models.JSONField(default=dict)
-    data = data_dict
+            })
+    # data = data_dict
 
     team = models.ForeignKey(
         'auth.User',
@@ -134,8 +178,8 @@ class GamePlay(models.Model):
     def registry_promt(instance, team, promt_number):
         level = GamePlay.objects.filter(team=team).filter(level=instance).get()
         if level.level_status != 'DN':
-            if not level.data[promt_number]:
-                level.data[promt_number] = True
+            if not level.data[str(promt_number)]:
+                level.data[str(promt_number)] = True
                 level.getted_promt_counter += 1
                 level.save()
 
