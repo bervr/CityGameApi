@@ -1,5 +1,4 @@
 import datetime
-
 from rest_framework import serializers
 from .models import Game, GameLevel, TeamAnswers, GamePlay
 from django.contrib.auth.models import User
