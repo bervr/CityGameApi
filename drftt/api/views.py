@@ -1,11 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from .serialisers import GameLevelSerialiser,\
-    TeamSerialiser, AnswerSerialiser, GameSummarySerialiser, PromtSerialiser
+from .serialisers import GameLevelSerialiser, AnswerSerialiser, GameSummarySerialiser, PromtSerialiser
 from .models import GameLevel, TeamAnswers, GamePlay, Game
 from rest_framework import generics, permissions
-from django.contrib.auth.models import User
 from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
 
@@ -78,16 +75,6 @@ class GetPromt(generics.ListAPIView):
         return serializer_class(*args, **kwargs)
 
 
-# class TeamList(generics.ListAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = TeamSerialiser
-#
-#
-# class TeamDetail(generics.RetrieveAPIView):
-#     queryset = User.objects.all()
-#     serializer_class = TeamSerialiser
-
-
 class AnswerDetail(generics.CreateAPIView):
     queryset = TeamAnswers.objects.all()
     serializer_class = AnswerSerialiser
@@ -95,7 +82,6 @@ class AnswerDetail(generics.CreateAPIView):
 
     def perform_create(self, serialiser):
         serialiser.save(team=self.request.user)
-
 
 
 @api_view(['GET'])

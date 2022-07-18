@@ -1,13 +1,10 @@
 import datetime
-
-from django.contrib import auth
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
-from collections import OrderedDict
-import zoneinfo
+
 
 
 class Game(models.Model):
@@ -20,7 +17,7 @@ class Game(models.Model):
     game_finish = models.DateTimeField(blank=True, null=True)
     now = timezone.now()
 
-    def check_game_time(instance):  #допустим что город один и сервер в его часовом поясе
+    def check_game_time(instance):  # допустим что город один и сервер в его часовом поясе
         if instance.game_finish >= timezone.now() >= instance.game_start and not instance.game_go:
             instance.game_go = True
             instance.save()
@@ -159,7 +156,6 @@ class GamePlay(models.Model):
                 2: False,
                 3: False,
             })
-    # data = data_dict
 
     team = models.ForeignKey(
         'auth.User',
