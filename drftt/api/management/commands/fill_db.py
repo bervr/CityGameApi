@@ -33,5 +33,5 @@ class Command(BaseCommand):
             new_level.save()
 
 
-        User.objects.create_superuser('bervr', 'bervr@1.local', '12345')
+        User.objects.create_superuser('django', 'django@1.local', '12345')
         User.objects.create_user('test-team', 'tt@1.local', '1qwerty23')

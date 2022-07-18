@@ -14,7 +14,7 @@ class GameSerialiser(serializers.ModelSerializer):
 class GameLevelSerialiser(serializers.ModelSerializer):
     class Meta:
         model = GameLevel
-        fields = ['number', 'name', 'task', 'geo_lat', 'geo_lng',]
+        fields = ['number', 'name', 'task', 'geo_lat', 'geo_lng']
 
 
 class TeamSerialiser(serializers.ModelSerializer):
@@ -54,27 +54,5 @@ class GameSummarySerialiser(serializers.BaseSerializer):
         return human_time+millis
 
     def to_representation(self, instance):
-        result = {}
-        for item in instance:
-            place = {}
-            lvl = {}
-            levels = {}
-            a = result.keys()
-            if str(item.place) not in result.keys():
-                place['place'] = item.place
-                place['team'] = item.user.username
-                place['levels'] = levels
-                place['total_finished'] = item.total_finished
-                if item.summ_penalty:
-                    place['summ_penalty'] = self.get_human_time(item.summ_penalty)
-                result[f'{item.place}'] = place
-            else:
-                levels = result.get(str(item.place)).get('levels')
-            lvl['level_name'] = item.level.name
-            lvl['level_status'] = item.level_status
-            if item.level_penalty:
-                lvl['level_penalty'] = self.get_human_time(item.level_penalty)
-            levels[f'{item.level_id}'] = lvl
-
-        return result
+        return instance
 

@@ -21,7 +21,7 @@ app_name = 'api'
 urlpatterns = [
     path('game/<int:game>/level/', views.GameLevelList.as_view()),
     path('game/<int:game>/level/<int:pk>/', views.GameLevelDetail.as_view()),
-    path('level/<int:game>/<int:pk>/promt/<int:num>/', views.GetPromt.as_view()),
+    path('game/<int:game>/level/<int:pk>/promt/<int:num>/', views.GetPromt.as_view()),
     path('answer/', views.AnswerDetail.as_view()),
     path('stat/<int:game>/', views.game_summary),
 
