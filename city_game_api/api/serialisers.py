@@ -19,6 +19,7 @@ class GameLevelSerialiser(serializers.ModelSerializer):
 class TeamSerialiser(serializers.ModelSerializer):
 
     answers_team = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = ('id', 'username', 'answers_team')
@@ -54,4 +55,3 @@ class GameSummarySerialiser(serializers.BaseSerializer):
 
     def to_representation(self, instance):
         return instance
-
