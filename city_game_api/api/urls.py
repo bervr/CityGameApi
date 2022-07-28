@@ -19,9 +19,9 @@ from django.urls import path
 app_name = 'api'
 
 urlpatterns = [
-    path('game/<int:game>/level/', views.GameLevelList.as_view()),
-    path('game/<int:game>/level/<int:pk>/', views.GameLevelDetail.as_view()),
-    path('game/<int:game>/level/<int:pk>/promt/<int:num>/', views.GetPromt.as_view()),
-    path('answer/', views.AnswerDetail.as_view()),
+    path('game/<int:game>/level/', views.GameLevelList.as_view(), name='game'),
+    path('game/<int:game>/level/<int:pk>/', views.GameLevelDetail.as_view(), name='level'),
+    path('game/<int:game>/level/<int:pk>/promt/<int:num>/', views.GetPromt.as_view(), name='promt'),
+    path('answer/', views.AnswerDetail.as_view(), name='answer'),
     path('stat/<int:game>/', views.game_summary),
 ]

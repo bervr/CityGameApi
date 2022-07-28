@@ -21,7 +21,7 @@ class Command(BaseCommand):
         for game in games:
             new_game = Game(**game)
             new_game.game_start = datetime.datetime.now()
-            new_game.game_finish = datetime.datetime.now()+datetime.timedelta(hours=9)
+            new_game.game_finish = datetime.datetime.now()+datetime.timedelta(hours=5)
             new_game.save()
 
         levels = load_from_json('gamelevel')
