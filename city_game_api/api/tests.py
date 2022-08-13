@@ -1,16 +1,21 @@
 import datetime
-
 from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
-from api.models import Game, GameLevel
+from rest_framework.test import APITestCase, APIClient
+from api.models import Game, GameLevel, GamePlay
 import factory
+import logging
+
+logger = logging.getLogger('factory')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
 
 
 class GameFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Game
+
     game_name = factory.Faker("name")
     game_start = factory.LazyFunction(datetime.datetime.now)
     game_finish = factory.LazyFunction(datetime.datetime.now)
@@ -20,9 +25,22 @@ class GameLevelFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = GameLevel
 
-    number = factory.Sequence(lambda n: f"{n}")
+    number = factory.Sequence(lambda n: '%d' % n)
     level_of_game = factory.SubFactory(GameFactory)
+    geo_lat = factory.Faker("latitude")
+    geo_lng = factory.Faker("longitude")
+    name = factory.Faker("name")
+    task = factory.Faker("sentence")
+    answer = factory.Faker("name")
 
+
+class GamePlayFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = GamePlay
+
+    game = factory.SubFactory(GameFactory)
+    level = factory.SubFactory(GameLevelFactory)
+    team = factory.SubFactory(User)
 
 
 class GameTests(APITestCase):
@@ -32,25 +50,9 @@ class GameTests(APITestCase):
         user_test2 = User.objects.create_user(username='test2', password='4asdfgH56')
         user_test2.save()
         self.one_game = GameFactory()
-        # self.one_game = Game.objects.create(
-        #     game_number=1,
-        #     game_name='first_game',
-        #     game_start=datetime.datetime.now(),
-        #     game_finish=datetime.datetime.now() + datetime.timedelta(hours=5)
-        # )
-        # self.one_level = GameLevelFactory()
-        # self.one_level = GameLevel.objects.create(
-        #     level_of_game=self.one_game,
-        #     number=1,
-        #     geo_lat=123456.12,
-        #     geo_lng=987654.98,
-        #     name='first_level',
-        #     task='first_task',
-        #     answer='1111',
-        #     promt1='1',
-        #     promt2='11',
-        #     promt3='111'
-        # )
+        with factory.debug():
+            self.one_level = GameLevelFactory(level_of_game=self.one_game, number=1, answer=1111, promt1=1)
+            GamePlayFactory(game=self.one_game, level=self.one_level, team=user_test1)
 
     # def test_post_answer(self):
     #     url = reverse('api:post_answer')
@@ -62,17 +64,30 @@ class GameTests(APITestCase):
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_game_exists(self):
-        url = reverse('api:game', kwargs={"game": self.one_game.game_number})
+        url = reverse('api:game', kwargs={"game": 1})
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # def test_level_exists(self):
-    #     url = reverse('api:level', kwargs={"game": self.one_game.game_number, "pk": self.one_level.number})
-    #     response = self.client.get(url, format='json')
-    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
-    #
-    # def test_level_constrait(self):
-    #     url = reverse('api:level', kwargs={"game": self.one_game.game_number, "pk": 18})
-    #     response = self.client.get(url, format='json')
-    #     print(response)
-    #     # self.assertEqual(response.status_code, status.HTTP_200_OK)
+    def test_game_not_exists(self):
+        url = reverse('api:game', kwargs={"game": 50})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_level_exists(self):
+        url = reverse('api:level', kwargs={"game": 1, "pk": 1})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_level_constrait(self):
+        url = reverse('api:level', kwargs={"game": 1, "pk": 18})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_play_get_promt(self):
+        url = reverse('api:promt', kwargs={"game": 1, "pk": 1, "num": 1})
+        response = self.client.get(url, format='json')
+        user = User.objects.get(username='test1')
+        client = APIClient()
+        client.force_authenticate(user=user)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, "1")

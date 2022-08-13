@@ -3,7 +3,9 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from django.utils import timezone
+# from django.utils import timezone
+# import pytz
+# timezone.now()
 
 
 
@@ -15,13 +17,13 @@ class Game(models.Model):
     game_go = models.BooleanField(default=False)
     game_start = models.DateTimeField(blank=True, null=True)
     game_finish = models.DateTimeField(blank=True, null=True)
-    now = timezone.now()
+    # now = timezone.now()
 
     def check_game_time(instance):  # допустим что город один и сервер в его часовом поясе
-        if instance.game_finish >= timezone.now() >= instance.game_start and not instance.game_go:
+        if instance.game_finish >= datetime.datetime.now() >= instance.game_start and not instance.game_go:
             instance.game_go = True
             instance.save()
-        if instance.game_finish <= timezone.now() and instance.game_go:
+        if instance.game_finish <= datetime.datetime.now() and instance.game_go:
             instance.game_go = False
             instance.save()
         return instance.game_go

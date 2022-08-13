@@ -2,9 +2,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serialisers import GameLevelSerialiser, AnswerSerialiser, GameSummarySerialiser, PromtSerialiser
 from .models import GameLevel, TeamAnswers, GamePlay, Game
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from .permissions import IsOwnerOrReadOnly
 from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 
 class GameLevelList(generics.ListAPIView):
@@ -25,13 +26,17 @@ class GameLevelDetail(generics.ListAPIView):
     serializer_class = GameLevelSerialiser
 
     def get_queryset(self):
-        data = super().get_queryset()
         game_num = self.kwargs['game']
         level_num = self.kwargs['pk']
         game = get_object_or_404(Game, game_number=game_num)
         game.check_game_time()
-        data = data.filter(level_of_game=game).filter(number=level_num)
-        return data
+        data = GameLevel.objects.filter(level_of_game=game)
+        data = data.filter(number=level_num)
+        if data:
+            return data
+        else:
+            raise Http404("User does not exist")
+
 
 
 class GetPromt(generics.ListAPIView):
